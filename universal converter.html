@@ -5,36 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal Converter</title>
     <style>
-        /* General styles for the page */
+        /* General page styling */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 20px;
+            background-color: #f4f4f4;
         }
 
-        /* Styling input fields, select dropdowns, and buttons */
+        /* Styling for sections */
+        .section {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Input, select, and button styling */
         input, select, button {
             margin: 10px;
             padding: 10px;
             width: 80%;
             max-width: 300px;
             display: inline-block;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
 
-        /* Adds spacing between sections */
-        .section {
-            margin-bottom: 20px;
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
 
-    <!-- Main title -->
     <h1>Universal Converter</h1>
 
-    <!-- Base Conversion Section -->
+    <!-- Number Base Converter -->
     <div class="section">
-        <h2>Base Conversion</h2>
+        <h2>Base Converter</h2>
         <input type="text" id="numberInput" placeholder="Enter number">
         <select id="baseOptions">
             <option value="2">Binary</option>
@@ -46,32 +64,39 @@
         <p id="baseResult"></p>
     </div>
 
-    <!-- Unit Conversion Section -->
+    <!-- Unit Converter -->
     <div class="section">
         <h2>Unit Converter</h2>
-        <!-- Input field for entering value -->
         <input type="number" id="unitInput" placeholder="Enter value">
-        <!-- Dropdown for selecting the conversion type -->
         <select id="unitOptions">
-            <option value="kgToG">Kilograms to Grams</option>
-            <option value="gToKg">Grams to Kilograms</option>
-            <option value="mToCm">Meters to Centimeters</option>
-            <option value="cmToM">Centimeters to Meters</option>
-            <option value="kmToM">Kilometers to Meters</option>
-            <option value="mToKm">Meters to Kilometers</option>
-            <option value="lbToKg">Pounds to Kilograms</option>
-            <option value="kgToLb">Kilograms to Pounds</option>
-            <option value="miToKm">Miles to Kilometers</option>
-            <option value="kmToMi">Kilometers to Miles</option>
+            <option value="kg To G">Kilograms to Grams</option>
+            <option value="g To Kg">Grams to Kilograms</option>
+            <option value="m To Cm">Meters to Centimeters</option>
+            <option value="cm To M">Centimeters to Meters</option>
+            <option value="km To M">Kilometers to Meters</option>
+            <option value="m To Km">Meters to Kilometers</option>
+            <option value="lb To Kg">Pounds to Kilograms</option>
+            <option value="kg To Lb">Kilograms to Pounds</option>
+            <option value="mi To Km">Miles to Kilometers</option>
+            <option value="km To Mi">Kilometers to Miles</option>
         </select>
-        <!-- Button to trigger unit conversion -->
         <button onclick="convertUnits()">Convert</button>
-        <!-- Paragraph to display the result -->
         <p id="unitResult"></p>
     </div>
 
+    <!-- Currency Converter -->
+    <div class="section">
+        <h2>Currency Converter</h2>
+        <input type="number" id="currencyAmount" placeholder="Enter amount">
+        <select id="fromCurrency"></select>
+        <p>To</p>
+        <select id="toCurrency"></select>
+        <button onclick="convertCurrency()">Convert</button>
+        <p id="currencyResult"></p>
+    </div>
+
     <script>
-        // Function to handle base conversion
+        // Function to handle number base conversion
         function convertBase() {
             const number = document.getElementById("numberInput").value;
             const base = parseInt(document.getElementById("baseOptions").value);
@@ -94,27 +119,83 @@
             const unit = document.getElementById("unitOptions").value;
             let result = "Converted: ";
 
-            // Check if input is valid
             if (isNaN(value)) {
                 result = "Please enter a valid number";
             } else {
-                // Conversion table for various unit types
                 const conversionTable = {
-                    "kgToG": value * 1000 + " g",
-                    "gToKg": value / 1000 + " kg",
-                    "mToCm": value * 100 + " cm",
-                    "cmToM": value / 100 + " m",
-                    "kmToM": value * 1000 + " m",
-                    "mToKm": value / 1000 + " km",
-                    "lbToKg": (value * 0.453592).toFixed(2) + " kg",
-                    "kgToLb": (value / 0.453592).toFixed(2) + " lb",
-                    "miToKm": (value * 1.60934).toFixed(2) + " km",
-                    "kmToMi": (value / 1.60934).toFixed(2) + " mi"
+                    "kg To G": value * 1000 + " g",
+                    "g To Kg": value / 1000 + " kg",
+                    "m To Cm": value * 100 + " cm",
+                    "cm To M": value / 100 + " m",
+                    "km To M": value * 1000 + " m",
+                    "m To Km": value / 1000 + " km",
+                    "lb To Kg": (value * 0.453592).toFixed(2) + " kg",
+                    "kg To Lb": (value / 0.453592).toFixed(2) + " lb",
+                    "mi To Km": (value * 1.60934).toFixed(2) + " km",
+                    "km To Mi": (value / 1.60934).toFixed(2) + " mi"
                 };
                 result += conversionTable[unit];
             }
             document.getElementById("unitResult").innerText = result;
         }
+
+        // Function to load currency options dynamically from API
+        async function loadCurrencyOptions() {
+                const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+                
+                const data = await response.json();
+                const currencies = Object.keys(data.rates);
+                const fromSelect = document.getElementById("fromCurrency");
+                const toSelect = document.getElementById("toCurrency");
+
+                currencies.forEach(currency => {
+                    let optionFrom = document.createElement("option");
+                    let optionTo = document.createElement("option");
+                    optionFrom.value = optionTo.value = currency;
+                    
+                    optionFrom.textContent = optionTo.textContent = currency;
+                    fromSelect.appendChild(optionFrom);
+                    toSelect.appendChild(optionTo);
+                });
+
+                fromSelect.value = "USD";
+                toSelect.value = "EUR";
+            
+            }
+        // Function to convert currency
+        async function convertCurrency() {
+            const amount = document.getElementById("currencyAmount").value;
+            const from = document.getElementById("fromCurrency").value;
+            const to = document.getElementById("toCurrency").value;
+
+            if (!amount || isNaN(amount) || amount <= 0) {
+                document.getElementById("currencyResult").innerText = "Enter a valid amount.";
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
+                if (!response.ok) throw new Error("Failed to fetch exchange rate.");
+
+                const data = await response.json();
+                const exchangeRate = data.rates[to];
+
+                if (!exchangeRate) {
+                    document.getElementById("currencyResult").innerText = "Invalid currency selection.";
+                    return;
+                }
+
+                const convertedAmount = (amount * exchangeRate).toFixed(2);
+                document.getElementById("currencyResult").innerText = `Converted Amount: ${convertedAmount} ${to}`;
+            } catch (error) {
+                console.error("Error in currency conversion:", error);
+                document.getElementById("currencyResult").innerText = "Error fetching exchange rate.";
+            }
+        }
+
+        // Load currency options when page loads
+        loadCurrencyOptions();
     </script>
+
 </body>
 </html>
