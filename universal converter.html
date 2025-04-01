@@ -3,74 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Converter</title>
+    <title>Converter Tool</title>
     <style>
-        /* General page styling */
+        /* General styles for the body to set font, alignment, and margin */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 20px;
-            background-color: #f4f4f4;
         }
 
-        /* Styling for sections */
-        .section {
-            background: white;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 400px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Input, select, and button styling */
+        /* Styling for input fields, select dropdowns, and buttons */
         input, select, button {
             margin: 10px;
             padding: 10px;
             width: 80%;
             max-width: 300px;
             display: inline-block;
-            border-radius: 5px;
-            border: 1px solid #ccc;
         }
 
-        button {
-            background-color: #28a745;
-            color: white;
-            cursor: pointer;
-            border: none;
-        }
-
-        button:hover {
-            background-color: #218838;
+        /* Adds bottom margin to each conversion section for spacing */
+        .section {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-
+    <!-- Main header of the webpage -->
     <h1>Universal Converter</h1>
 
-    <!-- Number Base Converter -->
+    <!-- Base Conversion Section -->
     <div class="section">
-        <h2>Base Converter</h2>
+        <h2>Base Conversion</h2>
+        <!-- Input for number to convert -->
         <input type="text" id="numberInput" placeholder="Enter number">
+        <!-- Dropdown for selecting the target base -->
         <select id="baseOptions">
             <option value="2">Binary</option>
             <option value="10">Decimal</option>
             <option value="16">Hexadecimal</option>
             <option value="8">Octal</option>
         </select>
+        <!-- Button to trigger the conversion -->
         <button onclick="convertBase()">Convert</button>
+        <!-- Paragraph to display the conversion result -->
         <p id="baseResult"></p>
     </div>
 
-    <!-- Unit Converter -->
+    <!-- Unit Conversion Section -->
     <div class="section">
         <h2>Unit Converter</h2>
+        <!-- Input for entering value to convert -->
         <input type="number" id="unitInput" placeholder="Enter value">
+        <!-- Dropdown to select the unit conversion type -->
         <select id="unitOptions">
-            <option value="kg To G">Kilograms to Grams</option>
-            <option value="g To Kg">Grams to Kilograms</option>
+            <option value="kg To G">Killograms to grams</option>
+            <option value="g To Kg">grams to Killograms</option>
             <option value="m To Cm">Meters to Centimeters</option>
             <option value="cm To M">Centimeters to Meters</option>
             <option value="km To M">Kilometers to Meters</option>
@@ -80,48 +67,69 @@
             <option value="mi To Km">Miles to Kilometers</option>
             <option value="km To Mi">Kilometers to Miles</option>
         </select>
+        <!-- Button to trigger the unit conversion -->
         <button onclick="convertUnits()">Convert</button>
+        <!-- Paragraph to display the unit conversion result -->
         <p id="unitResult"></p>
     </div>
 
-    <!-- Currency Converter -->
+    <!-- Currency Conversion Section -->
     <div class="section">
         <h2>Currency Converter</h2>
-        <input type="number" id="currencyAmount" placeholder="Enter amount">
+        <!-- Input to enter the amount to convert -->
+        <input type="number" id="currencyAmount" placeholder="Amount">
+        <!-- Dropdown to select the source currency -->
         <select id="fromCurrency"></select>
         <p>To</p>
+        <!-- Dropdown to select the target currency -->
         <select id="toCurrency"></select>
+        <!-- Button to trigger the currency conversion -->
         <button onclick="convertCurrency()">Convert</button>
+        <!-- Paragraph to display the currency conversion result -->
         <p id="currencyResult"></p>
     </div>
 
+    <!-- File input to upload a JSON file for batch processing -->
+    <input type="file" id="jsonFile" accept="application/json">
+    <!-- Button to process batch conversion from a file -->
+    <button onclick="processBatch()">Process Batch</button>
+    <!-- Button to download the results as a JSON file -->
+    <button onclick="downloadResults()">Download Results</button>
+
     <script>
-        // Function to handle number base conversion
+        // Array to store the history of conversions (for downloading later)
+        let conversionsHistory = [];
+
+        // Function to handle base conversion (number system)
         function convertBase() {
-            const number = document.getElementById("numberInput").value;
-            const base = parseInt(document.getElementById("baseOptions").value);
+            const number = document.getElementById("numberInput").value;  // Get the number from input
+            const base = parseInt(document.getElementById("baseOptions").value);  // Get the selected base
             let result = "Converted: ";
 
             if (number !== "") {
-                const decimal = parseInt(number, 10);
+                const decimal = parseInt(number, 10);  // Convert the number to decimal
                 if (!isNaN(decimal)) {
+                    // Convert the decimal number to the target base
                     result += `${decimal.toString(base).toUpperCase()} (Base ${base})`;
+                    // Add the conversion to the history
+                    conversionsHistory.push({ type: "Base Conversion", input: number, base, result });
                 } else {
-                    result = "Invalid input";
+                    result = "Invalid input";  // Show error if the input is not a valid number
                 }
             }
-            document.getElementById("baseResult").innerText = result;
+            document.getElementById("baseResult").innerText = result;  // Display the result
         }
 
-        // Function to handle unit conversions
+        // Function to handle unit conversions (length, weight, etc.)
         function convertUnits() {
-            const value = parseFloat(document.getElementById("unitInput").value);
-            const unit = document.getElementById("unitOptions").value;
+            const value = parseFloat(document.getElementById("unitInput").value);  // Get the input value
+            const unit = document.getElementById("unitOptions").value;  // Get the selected conversion type
             let result = "Converted: ";
 
             if (isNaN(value)) {
-                result = "Please enter a valid number";
+                result = "Please enter a valid number";  // Check for invalid input
             } else {
+                // Conversion table to handle different unit conversions
                 const conversionTable = {
                     "kg To G": value * 1000 + " g",
                     "g To Kg": value / 1000 + " kg",
@@ -134,68 +142,86 @@
                     "mi To Km": (value * 1.60934).toFixed(2) + " km",
                     "km To Mi": (value / 1.60934).toFixed(2) + " mi"
                 };
-                result += conversionTable[unit];
+                result += conversionTable[unit];  // Get the result from the conversion table
+                conversionsHistory.push({ type: "Unit Conversion", input: value, unit, result });  // Store in history
             }
-            document.getElementById("unitResult").innerText = result;
+            document.getElementById("unitResult").innerText = result;  // Display the result
         }
 
-        // Function to load currency options dynamically from API
+        // Function to load currency options dynamically from an API
         async function loadCurrencyOptions() {
-                const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
-                
-                const data = await response.json();
-                const currencies = Object.keys(data.rates);
-                const fromSelect = document.getElementById("fromCurrency");
-                const toSelect = document.getElementById("toCurrency");
+            const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");  // Fetch data from the currency API
+            const data = await response.json();
+            const currencies = Object.keys(data.rates);  // Extract currency keys (code names)
+            const fromSelect = document.getElementById("fromCurrency");
+            const toSelect = document.getElementById("toCurrency");
 
-                currencies.forEach(currency => {
-                    let optionFrom = document.createElement("option");
-                    let optionTo = document.createElement("option");
-                    optionFrom.value = optionTo.value = currency;
-                    
-                    optionFrom.textContent = optionTo.textContent = currency;
-                    fromSelect.appendChild(optionFrom);
-                    toSelect.appendChild(optionTo);
-                });
+            // Populate the currency dropdowns with available currencies
+            currencies.forEach(currency => {
+                const fromOption = document.createElement("option");
+                fromOption.value = currency;
+                fromOption.textContent = currency;
+                fromSelect.appendChild(fromOption);
 
-                fromSelect.value = "USD";
-                toSelect.value = "EUR";
-            
-            }
-        // Function to convert currency
+                const toOption = document.createElement("option");
+                toOption.value = currency;
+                toOption.textContent = currency;
+                toSelect.appendChild(toOption);
+            });
+        }
+
+        // Function to handle currency conversion
         async function convertCurrency() {
-            const amount = document.getElementById("currencyAmount").value;
-            const from = document.getElementById("fromCurrency").value;
-            const to = document.getElementById("toCurrency").value;
+            const amount = document.getElementById("currencyAmount").value;  // Get the input amount
+            const from = document.getElementById("fromCurrency").value;  // Get the source currency
+            const to = document.getElementById("toCurrency").value;  // Get the target currency
 
-            if (!amount || isNaN(amount) || amount <= 0) {
-                document.getElementById("currencyResult").innerText = "Enter a valid amount.";
+            if (!amount || isNaN(amount) || !from || !to) {
+                document.getElementById("currencyResult").innerText = "Please provide valid amount and select both currencies.";  // Input validation
                 return;
             }
 
             try {
-                const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
-                if (!response.ok) throw new Error("Failed to fetch exchange rate.");
-
+                const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);  // Fetch exchange rate
                 const data = await response.json();
-                const exchangeRate = data.rates[to];
+                const exchangeRate = data.rates[to];  // Get the exchange rate for the selected target currency
+                const convertedAmount = (amount * exchangeRate).toFixed(2);  // Calculate the converted amount
 
-                if (!exchangeRate) {
-                    document.getElementById("currencyResult").innerText = "Invalid currency selection.";
-                    return;
-                }
-
-                const convertedAmount = (amount * exchangeRate).toFixed(2);
-                document.getElementById("currencyResult").innerText = `Converted Amount: ${convertedAmount} ${to}`;
+                document.getElementById("currencyResult").innerText = `Converted Amount: ${convertedAmount} ${to}`;  // Display the result
+                conversionsHistory.push({ type: "Currency Conversion", input: amount, from, to, convertedAmount });  // Store the conversion result
             } catch (error) {
                 console.error("Error in currency conversion:", error);
-                document.getElementById("currencyResult").innerText = "Error fetching exchange rate.";
+                document.getElementById("currencyResult").innerText = "Error in currency conversion.";  // Handle error
             }
         }
 
-        // Load currency options when page loads
-        loadCurrencyOptions();
-    </script>
+        // Function to process a batch of currency conversions from a JSON file
+        async function processBatch() {
+            const file = document.getElementById("jsonFile").files[0];  // Get the uploaded JSON file
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const batchData = JSON.parse(event.target.result);  // Parse the JSON data
+                    for (let entry of batchData) {
+                        const result = await convertCurrency(entry.amount, entry.from, entry.to);  // Process each entry in the batch
+                        conversionsHistory.push({ type: "Currency Conversion", input: entry.amount, from: entry.from, to: entry.to, result });  // Store the result
+                    }
+                    alert("Batch processing complete!");  // Notify the user when processing is finished
+                };
+                reader.readAsText(file);  // Read the file contents
+            }
+        }
 
+        // Function to download the conversion results as a JSON file
+        function downloadResults() {
+            const blob = new Blob([JSON.stringify(conversionsHistory, null, 2)], { type: "application/json" });  // Create a Blob from the history
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);  // Create a download link
+            link.download = "conversion_results.json";  // Set the filename for download
+            link.click();  // Trigger the download
+        }
+
+        loadCurrencyOptions();  // Call the function to load currency options when the page loads
+    </script>
 </body>
 </html>
