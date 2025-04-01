@@ -35,47 +35,85 @@
     <!-- Base Conversion Section -->
     <div class="section">
         <h2>Base Conversion</h2>
-        <!-- Input field for entering a number -->
         <input type="text" id="numberInput" placeholder="Enter number">
-        <!-- Dropdown to select the conversion base -->
         <select id="baseOptions">
             <option value="2">Binary</option>
             <option value="10">Decimal</option>
             <option value="16">Hexadecimal</option>
             <option value="8">Octal</option>
         </select>
-        <!-- Button to trigger conversion -->
         <button onclick="convertBase()">Convert</button>
-        <!-- Paragraph to display the result -->
         <p id="baseResult"></p>
+    </div>
+
+    <!-- Unit Conversion Section -->
+    <div class="section">
+        <h2>Unit Converter</h2>
+        <!-- Input field for entering value -->
+        <input type="number" id="unitInput" placeholder="Enter value">
+        <!-- Dropdown for selecting the conversion type -->
+        <select id="unitOptions">
+            <option value="kgToG">Kilograms to Grams</option>
+            <option value="gToKg">Grams to Kilograms</option>
+            <option value="mToCm">Meters to Centimeters</option>
+            <option value="cmToM">Centimeters to Meters</option>
+            <option value="kmToM">Kilometers to Meters</option>
+            <option value="mToKm">Meters to Kilometers</option>
+            <option value="lbToKg">Pounds to Kilograms</option>
+            <option value="kgToLb">Kilograms to Pounds</option>
+            <option value="miToKm">Miles to Kilometers</option>
+            <option value="kmToMi">Kilometers to Miles</option>
+        </select>
+        <!-- Button to trigger unit conversion -->
+        <button onclick="convertUnits()">Convert</button>
+        <!-- Paragraph to display the result -->
+        <p id="unitResult"></p>
     </div>
 
     <script>
         // Function to handle base conversion
         function convertBase() {
-            // Get user input
             const number = document.getElementById("numberInput").value;
-            // Get the selected base (Binary, Decimal, Hexadecimal, or Octal)
             const base = parseInt(document.getElementById("baseOptions").value);
             let result = "Converted: ";
 
-            // Check if input is not empty
             if (number !== "") {
-                // Convert input to a decimal number
                 const decimal = parseInt(number, 10);
-
-                // Check if the input is a valid number
                 if (!isNaN(decimal)) {
-                    // Convert the decimal number to the selected base
                     result += `${decimal.toString(base).toUpperCase()} (Base ${base})`;
                 } else {
-                    // Error message for invalid input
                     result = "Invalid input";
                 }
             }
-
-            // Display the result in the paragraph element
             document.getElementById("baseResult").innerText = result;
+        }
+
+        // Function to handle unit conversions
+        function convertUnits() {
+            const value = parseFloat(document.getElementById("unitInput").value);
+            const unit = document.getElementById("unitOptions").value;
+            let result = "Converted: ";
+
+            // Check if input is valid
+            if (isNaN(value)) {
+                result = "Please enter a valid number";
+            } else {
+                // Conversion table for various unit types
+                const conversionTable = {
+                    "kgToG": value * 1000 + " g",
+                    "gToKg": value / 1000 + " kg",
+                    "mToCm": value * 100 + " cm",
+                    "cmToM": value / 100 + " m",
+                    "kmToM": value * 1000 + " m",
+                    "mToKm": value / 1000 + " km",
+                    "lbToKg": (value * 0.453592).toFixed(2) + " kg",
+                    "kgToLb": (value / 0.453592).toFixed(2) + " lb",
+                    "miToKm": (value * 1.60934).toFixed(2) + " km",
+                    "kmToMi": (value / 1.60934).toFixed(2) + " mi"
+                };
+                result += conversionTable[unit];
+            }
+            document.getElementById("unitResult").innerText = result;
         }
     </script>
 </body>
