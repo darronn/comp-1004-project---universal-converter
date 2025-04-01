@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Converter</title>
+    <style>
+        /* General styles for the page */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        /* Styling input fields, select dropdowns, and buttons */
+        input, select, button {
+            margin: 10px;
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            display: inline-block;
+        }
+
+        /* Adds spacing between sections */
+        .section {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main title -->
+    <h1>Universal Converter</h1>
+
+    <!-- Base Conversion Section -->
+    <div class="section">
+        <h2>Base Conversion</h2>
+        <!-- Input field for entering a number -->
+        <input type="text" id="numberInput" placeholder="Enter number">
+        <!-- Dropdown to select the conversion base -->
+        <select id="baseOptions">
+            <option value="2">Binary</option>
+            <option value="10">Decimal</option>
+            <option value="16">Hexadecimal</option>
+            <option value="8">Octal</option>
+        </select>
+        <!-- Button to trigger conversion -->
+        <button onclick="convertBase()">Convert</button>
+        <!-- Paragraph to display the result -->
+        <p id="baseResult"></p>
+    </div>
+
+    <script>
+        // Function to handle base conversion
+        function convertBase() {
+            // Get user input
+            const number = document.getElementById("numberInput").value;
+            // Get the selected base (Binary, Decimal, Hexadecimal, or Octal)
+            const base = parseInt(document.getElementById("baseOptions").value);
+            let result = "Converted: ";
+
+            // Check if input is not empty
+            if (number !== "") {
+                // Convert input to a decimal number
+                const decimal = parseInt(number, 10);
+
+                // Check if the input is a valid number
+                if (!isNaN(decimal)) {
+                    // Convert the decimal number to the selected base
+                    result += `${decimal.toString(base).toUpperCase()} (Base ${base})`;
+                } else {
+                    // Error message for invalid input
+                    result = "Invalid input";
+                }
+            }
+
+            // Display the result in the paragraph element
+            document.getElementById("baseResult").innerText = result;
+        }
+    </script>
+</body>
+</html>
