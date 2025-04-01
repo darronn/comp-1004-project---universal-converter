@@ -1,0 +1,5 @@
+[
+    { "amount": 100, "from": "USD", "to": "EUR" },
+    { "amount": 200, "from": "GBP", "to": "JPY" },
+    { "amount": 50, "from": "INR", "to": "USD" }
+]
